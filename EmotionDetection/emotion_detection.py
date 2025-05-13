@@ -1,4 +1,4 @@
-"""Emotion Detector"""
+"""Emotion Detector Package"""
 import json
 import requests
 
@@ -25,11 +25,19 @@ def emotion_detector(text_to_analyze):
 
     # Make a POST request to the API with the payload and headers
     response = requests.post(URL, json=myobj, headers=HEADER, timeout=TIMEOUT)
-
-    # Parse the response from the API
-    formatted_response = json.loads(response.text)
-    # print(formatted_response)
-    emotion_predictions = formatted_response.get('emotionPredictions')
-    emotion = emotion_predictions[0].get('emotion') if emotion_predictions else {}
-    emotion["dominant_emotion"] = get_dominant_emotion(emotion)
+    if response.status_code == 200:
+        # Parse the response from the API
+        formatted_response = json.loads(response.text)
+        emotion_predictions = formatted_response.get('emotionPredictions')
+        emotion = emotion_predictions[0].get('emotion') if emotion_predictions else {}
+        emotion["dominant_emotion"] = get_dominant_emotion(emotion)
+    else:
+        emotion = {
+            "anger": None,
+            "disgust": None,
+            "fear": None,
+            "joy": None,
+            "sadness": None,
+            "dominant_emotion": None
+        }
     return emotion
